@@ -26,10 +26,7 @@ async fn main() {
             bullet.render();
         }
 
-        bullets = bullets
-            .into_iter()
-            .filter(|bullet| !bullet.is_out())
-            .collect();
+        bullets.retain(|bullet| !bullet.is_out());
 
         player.update();
         player.render();
