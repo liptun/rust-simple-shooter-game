@@ -1,5 +1,7 @@
-use macroquad::prelude::*;
+use std::collections::HashSet;
+
 use crate::{control::Command, helpers};
+use macroquad::prelude::*;
 
 pub struct Player {
     position: Vec2,
@@ -20,7 +22,7 @@ impl Player {
         helpers::draw_rect(&self.position, &self.size, &self.color);
     }
 
-    pub fn update_controls(&mut self, commands: Vec<Command>) {
+    pub fn update_controls(&mut self, commands: HashSet<Command>) {
         if commands.contains(&Command::Left) {
             self.position.x += -4.0;
         }
@@ -28,6 +30,4 @@ impl Player {
             self.position.x += 4.0;
         }
     }
-
 }
-

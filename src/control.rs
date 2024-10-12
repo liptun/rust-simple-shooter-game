@@ -1,8 +1,10 @@
+use std::collections::HashSet;
+
 use macroquad::prelude::*;
 
 pub struct Control;
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Eq, Hash)]
 pub enum Command {
     Left,
     Right,
@@ -10,16 +12,16 @@ pub enum Command {
 }
 
 impl Control {
-    pub fn update() -> Vec<Command> {
-        let mut commands: Vec<Command> = Vec::new();
+    pub fn update() -> HashSet<Command> {
+        let mut commands: HashSet<Command> = HashSet::new();
         if is_key_down(KeyCode::Left) {
-            commands.push(Command::Left)
+            commands.insert(Command::Left);
         }
         if is_key_down(KeyCode::Right) {
-            commands.push(Command::Right)
+            commands.insert(Command::Right);
         }
         if is_key_down(KeyCode::Space) {
-            commands.push(Command::Shoot)
+            commands.insert(Command::Shoot);
         }
         commands
     }
