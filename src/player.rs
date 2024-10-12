@@ -12,7 +12,7 @@ pub struct Player {
 impl Player {
     pub fn new() -> Self {
         Self {
-            position: Vec2::new(100., 100.),
+            position: Vec2::new(400., 500.),
             size: Vec2::new(20., 30.),
             color: BLUE,
         }
