@@ -2,16 +2,22 @@ mod bullet;
 mod control;
 mod helpers;
 mod player;
+mod resource;
 
 use bullet::Bullet;
+use collections::storage;
 use control::Control;
 use macroquad::prelude::*;
 use player::Player;
+use resource::Resource;
 
 #[macroquad::main("Space Duel")]
 async fn main() {
+    storage::store(Resource::new().await);
+
     let mut player = Player::new();
     let mut bullets: Vec<Bullet> = Vec::new();
+
 
     loop {
         clear_background(BLACK);
