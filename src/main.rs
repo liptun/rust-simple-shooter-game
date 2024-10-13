@@ -46,6 +46,9 @@ async fn main() {
                 state.spawn_cooldown = 60;
                 state.wave += 1;
                 spawn_enemies(&mut enemies, state.wave);
+                if state.wave > 1 {
+                    player.hp += 2 * state.wave;
+                }
             }
         }
 
@@ -68,7 +71,7 @@ async fn main() {
         }
 
         for enemy in enemies.iter_mut() {
-            enemy.update(&mut bullets, &player);
+            enemy.update(&mut bullets, &player, &state);
             enemy.render();
         }
 

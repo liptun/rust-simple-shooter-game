@@ -61,7 +61,7 @@ impl Bullet {
     pub fn check_collision_with_player(&mut self, player: &mut Player) {
         if helpers::box_collision(&self.position, &self.size, &player.position, &player.size) {
             self.destroy = true;
-            player.deal_damage(50);
+            player.deal_damage(20);
         }
 
     }

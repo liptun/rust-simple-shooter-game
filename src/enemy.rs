@@ -2,7 +2,7 @@ use crate::{
     bullet::{Bullet, Direction},
     helpers,
     player::Player,
-    resource::Resource,
+    resource::Resource, state::State,
 };
 use collections::storage;
 use macroquad::prelude::*;
@@ -43,14 +43,14 @@ impl Enemy {
         );
     }
 
-    pub fn update(&mut self, bullets: &mut Vec<Bullet>, player: &Player) {
+    pub fn update(&mut self, bullets: &mut Vec<Bullet>, player: &Player, state: &State) {
         let distance = self.position.x - player.position.x;
 
-        if distance.abs() > 3. {
+        if distance.abs() > state.wave as f32 * 20. {
             if distance > 0. {
-                //self.position.x += -0.5;
+                self.position.x += -0.05 * state.wave as f32;
             } else {
-                //self.position.x += 0.5;
+                self.position.x += 0.05 * state.wave as f32;
             }
         } else {
             if self.cooldown == 0 {
@@ -59,7 +59,8 @@ impl Enemy {
                     self.size.y + self.position.y,
                 );
                 bullets.push(Bullet::new(&position, Direction::Down));
-                self.cooldown = 100;
+
+                self.cooldown = (100 - state.wave * 10).max(10);
             }
         }
 
