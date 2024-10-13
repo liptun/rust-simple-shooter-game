@@ -29,6 +29,15 @@ async fn main() {
             return;
         }
 
+        if is_key_pressed(KeyCode::H) {
+            for enemy in enemies.iter() {
+                bullets.push(Bullet::new(
+                    &Vec2::new(enemy.position.x + enemy.size.x / 2., screen_height()),
+                    bullet::Direction::Up,
+                ))
+            }
+        }
+
         if enemies.len() == 0 {
             if spawn_cooldown > 0 {
                 spawn_cooldown -= 1;
@@ -77,7 +86,13 @@ async fn main() {
         if enemies.len() > 0 {
             draw_text(&format!("Wave: {}", wave).to_string(), 10., 90., 32., WHITE);
         } else {
-            draw_text(&format!("Next wave: {}", spawn_cooldown).to_string(), 10., 90., 32., WHITE);
+            draw_text(
+                &format!("Next wave: {}", spawn_cooldown).to_string(),
+                10.,
+                90.,
+                32.,
+                WHITE,
+            );
         }
 
         next_frame().await;
