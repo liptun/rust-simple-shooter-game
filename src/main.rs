@@ -4,6 +4,7 @@ mod enemy;
 mod helpers;
 mod player;
 mod resource;
+mod state;
 
 use bullet::Bullet;
 use collections::storage;
@@ -12,6 +13,7 @@ use enemy::{spawn_enemies, Enemy};
 use macroquad::prelude::*;
 use player::Player;
 use resource::Resource;
+use state::State;
 
 #[macroquad::main("Space Duel")]
 async fn main() {
@@ -20,8 +22,7 @@ async fn main() {
     let mut player = Player::new();
     let mut bullets: Vec<Bullet> = Vec::new();
     let mut enemies: Vec<Enemy> = Vec::new();
-    let mut wave: i32 = 0;
-    let mut spawn_cooldown = 0;
+    let mut state = State::new();
 
     loop {
         clear_background(BLACK);
@@ -39,18 +40,32 @@ async fn main() {
         }
 
         if enemies.len() == 0 {
-            if spawn_cooldown > 0 {
-                spawn_cooldown -= 1;
+            if state.spawn_cooldown > 0 {
+                state.spawn_cooldown -= 1;
             } else {
-                spawn_cooldown = 60;
-                wave += 1;
-                spawn_enemies(&mut enemies, wave);
+                state.spawn_cooldown = 60;
+                state.wave += 1;
+                spawn_enemies(&mut enemies, state.wave);
             }
         }
 
-        player.update_controls(Control::update(), &mut bullets);
-        player.update();
-        player.render();
+        if player.hp > 0 {
+            player.update_controls(Control::update(), &mut bullets);
+            player.update();
+            player.render();
+        } else {
+            state.game_over_countdown -= 1;
+            draw_text(
+                "Game over",
+                screen_width() / 2. - 200.,
+                screen_height() / 2.,
+                100.,
+                WHITE,
+            );
+            if state.game_over_countdown == 0 {
+                return;
+            }
+        }
 
         for enemy in enemies.iter_mut() {
             enemy.update(&mut bullets, &player);
@@ -69,13 +84,17 @@ async fn main() {
         bullets.retain(|bullet| !bullet.is_out() && !bullet.destroy);
         enemies.retain(|enemy| enemy.hp > 0);
 
-        draw_text(
-            &format!("Player HP: {}", player.hp).to_string(),
-            10.,
-            30.,
-            32.,
-            WHITE,
-        );
+        if player.hp > 0 {
+            draw_text(
+                &format!("Player HP: {}", player.hp).to_string(),
+                10.,
+                30.,
+                32.,
+                WHITE,
+            );
+        } else {
+            draw_text(&format!("Player is dead").to_string(), 10., 30., 32., WHITE);
+        }
         draw_text(
             &format!("Enemies: {}", enemies.len()).to_string(),
             10.,
@@ -84,10 +103,16 @@ async fn main() {
             WHITE,
         );
         if enemies.len() > 0 {
-            draw_text(&format!("Wave: {}", wave).to_string(), 10., 90., 32., WHITE);
+            draw_text(
+                &format!("Wave: {}", state.wave).to_string(),
+                10.,
+                90.,
+                32.,
+                WHITE,
+            );
         } else {
             draw_text(
-                &format!("Next wave: {}", spawn_cooldown).to_string(),
+                &format!("Next wave: {}", state.spawn_cooldown).to_string(),
                 10.,
                 90.,
                 32.,
