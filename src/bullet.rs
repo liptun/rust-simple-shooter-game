@@ -1,4 +1,4 @@
-use crate::{enemy::Enemy, helpers};
+use crate::{enemy::Enemy, helpers, player::Player};
 use macroquad::prelude::*;
 
 #[derive(Debug)]
@@ -12,7 +12,7 @@ pub struct Bullet {
     pub position: Vec2,
     pub size: Vec2,
     color: Color,
-    direction: Direction,
+    pub direction: Direction,
     pub destroy: bool,
     speed: f32,
 }
@@ -56,5 +56,13 @@ impl Bullet {
                 break;
             }
         }
+    }
+
+    pub fn check_collision_with_player(&mut self, player: &mut Player) {
+        if helpers::box_collision(&self.position, &self.size, &player.position, &player.size) {
+            self.destroy = true;
+            player.deal_damage(50);
+        }
+
     }
 }

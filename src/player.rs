@@ -10,9 +10,10 @@ use macroquad::prelude::*;
 
 pub struct Player {
     pub position: Vec2,
-    size: Vec2,
+    pub size: Vec2,
     color: Color,
     cooldown: i32,
+    pub hp: i32,
 }
 
 impl Player {
@@ -22,6 +23,7 @@ impl Player {
             size: Vec2::new(64., 64.),
             color: BLUE,
             cooldown: 0,
+            hp: 100,
         }
     }
 
@@ -52,5 +54,9 @@ impl Player {
             bullets.push(Bullet::new(&position, bullet::Direction::Up));
             self.cooldown = 16;
         }
+    }
+
+    pub fn deal_damage(&mut self, damage: i32) {
+        self.hp -= damage;
     }
 }

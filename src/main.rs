@@ -1,9 +1,9 @@
 mod bullet;
 mod control;
+mod enemy;
 mod helpers;
 mod player;
 mod resource;
-mod enemy;
 
 use bullet::Bullet;
 use collections::storage;
@@ -21,9 +21,8 @@ async fn main() {
     let mut bullets: Vec<Bullet> = Vec::new();
     let mut enemies: Vec<Enemy> = Vec::new();
 
-    enemies.push(Enemy::new(&Vec2::new(10.,10.)));
-    enemies.push(Enemy::new(&Vec2::new(800.,10.)));
-
+    enemies.push(Enemy::new(&Vec2::new(10., 10.)));
+    enemies.push(Enemy::new(&Vec2::new(800., 10.)));
 
     loop {
         clear_background(BLACK);
@@ -42,11 +41,18 @@ async fn main() {
 
         for bullet in bullets.iter_mut() {
             bullet.update();
-            bullet.check_collision_with_enemies(&mut enemies);
+            if let bullet::Direction::Up = bullet.direction {
+                bullet.check_collision_with_enemies(&mut enemies);
+            } else {
+                bullet.check_collision_with_player(&mut player);
+            }
             bullet.render();
         }
         bullets.retain(|bullet| !bullet.is_out() && !bullet.destroy);
         enemies.retain(|enemy| enemy.hp > 0);
+
+        draw_text(&format!("Player HP: {}", player.hp).to_string(), 10., 30., 32., WHITE);
+        draw_text(&format!("Enemies: {}", enemies.len()).to_string(), 10., 60., 32., WHITE);
 
         next_frame().await;
     }
