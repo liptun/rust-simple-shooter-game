@@ -9,7 +9,7 @@ use collections::storage;
 use macroquad::prelude::*;
 
 pub struct Player {
-    position: Vec2,
+    pub position: Vec2,
     size: Vec2,
     color: Color,
     cooldown: i32,
