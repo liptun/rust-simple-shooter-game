@@ -8,7 +8,7 @@ mod resource;
 use bullet::Bullet;
 use collections::storage;
 use control::Control;
-use enemy::Enemy;
+use enemy::{spawn_enemies, Enemy};
 use macroquad::prelude::*;
 use player::Player;
 use resource::Resource;
@@ -20,14 +20,23 @@ async fn main() {
     let mut player = Player::new();
     let mut bullets: Vec<Bullet> = Vec::new();
     let mut enemies: Vec<Enemy> = Vec::new();
-
-    enemies.push(Enemy::new(&Vec2::new(10., 10.)));
-    enemies.push(Enemy::new(&Vec2::new(800., 10.)));
+    let mut wave: i32 = 0;
+    let mut spawn_cooldown = 0;
 
     loop {
         clear_background(BLACK);
         if is_key_down(KeyCode::Escape) {
             return;
+        }
+
+        if enemies.len() == 0 {
+            if spawn_cooldown > 0 {
+                spawn_cooldown -= 1;
+            } else {
+                spawn_cooldown = 60;
+                wave += 1;
+                spawn_enemies(&mut enemies, wave);
+            }
         }
 
         player.update_controls(Control::update(), &mut bullets);
@@ -51,8 +60,25 @@ async fn main() {
         bullets.retain(|bullet| !bullet.is_out() && !bullet.destroy);
         enemies.retain(|enemy| enemy.hp > 0);
 
-        draw_text(&format!("Player HP: {}", player.hp).to_string(), 10., 30., 32., WHITE);
-        draw_text(&format!("Enemies: {}", enemies.len()).to_string(), 10., 60., 32., WHITE);
+        draw_text(
+            &format!("Player HP: {}", player.hp).to_string(),
+            10.,
+            30.,
+            32.,
+            WHITE,
+        );
+        draw_text(
+            &format!("Enemies: {}", enemies.len()).to_string(),
+            10.,
+            60.,
+            32.,
+            WHITE,
+        );
+        if enemies.len() > 0 {
+            draw_text(&format!("Wave: {}", wave).to_string(), 10., 90., 32., WHITE);
+        } else {
+            draw_text(&format!("Next wave: {}", spawn_cooldown).to_string(), 10., 90., 32., WHITE);
+        }
 
         next_frame().await;
     }

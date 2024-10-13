@@ -1,5 +1,8 @@
 use crate::{
-    bullet::{Bullet, Direction}, helpers, player::Player, resource::Resource
+    bullet::{Bullet, Direction},
+    helpers,
+    player::Player,
+    resource::Resource,
 };
 use collections::storage;
 use macroquad::prelude::*;
@@ -15,6 +18,7 @@ pub struct Enemy {
 
 impl Enemy {
     pub fn new(position: &Vec2) -> Self {
+        println!("New enemy at: {}", position);
         Self {
             position: *position,
             size: Vec2::new(64., 64.),
@@ -44,9 +48,9 @@ impl Enemy {
 
         if distance.abs() > 3. {
             if distance > 0. {
-                self.position.x += -0.5;
+                //self.position.x += -0.5;
             } else {
-                self.position.x += 0.5;
+                //self.position.x += 0.5;
             }
         } else {
             if self.cooldown == 0 {
@@ -70,5 +74,14 @@ impl Enemy {
 
     pub fn deal_damage(&mut self, damage: i32) {
         self.hp -= damage;
+    }
+}
+
+pub fn spawn_enemies(enemies: &mut Vec<Enemy>, n: i32) {
+    let spacing = screen_width() / n as f32;
+    for i in 1..=n {
+        let mut new_enemy = Enemy::new(&Vec2::new(i as f32 * spacing - spacing / 2., 10.));
+        new_enemy.position.x -= new_enemy.size.x / 2.;
+        enemies.push(new_enemy);
     }
 }
