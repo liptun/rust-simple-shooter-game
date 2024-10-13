@@ -2,7 +2,8 @@ use crate::{
     bullet::{Bullet, Direction},
     helpers,
     player::Player,
-    resource::Resource, state::State,
+    resource::Resource,
+    state::State,
 };
 use collections::storage;
 use macroquad::prelude::*;

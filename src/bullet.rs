@@ -63,6 +63,5 @@ impl Bullet {
             self.destroy = true;
             player.deal_damage(20);
         }
-
     }
 }

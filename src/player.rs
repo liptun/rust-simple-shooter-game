@@ -19,7 +19,7 @@ pub struct Player {
 impl Player {
     pub fn new() -> Self {
         Self {
-            position: Vec2::new(screen_width() / 2. - 32., 500.),
+            position: Vec2::new(screen_width() / 2. - 32. * 2., 500.),
             size: Vec2::new(64., 64.),
             color: BLUE,
             cooldown: 0,
@@ -29,10 +29,16 @@ impl Player {
 
     pub fn render(&self) {
         let resource = storage::get::<Resource>();
-        draw_texture_ex(&resource.player, self.position.x, self.position.y, self.color, DrawTextureParams {
-            dest_size: Some(self.size),
-            ..Default::default()
-        });
+        draw_texture_ex(
+            &resource.player,
+            self.position.x,
+            self.position.y,
+            self.color,
+            DrawTextureParams {
+                dest_size: Some(self.size),
+                ..Default::default()
+            },
+        );
     }
 
     pub fn update(&mut self) {
