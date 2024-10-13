@@ -1,16 +1,16 @@
 use crate::{
-    bullet::{Bullet, Direction},
-    player::Player,
-    resource::Resource,
+    bullet::{Bullet, Direction}, helpers, player::Player, resource::Resource
 };
 use collections::storage;
 use macroquad::prelude::*;
 
+#[derive(Debug)]
 pub struct Enemy {
-    position: Vec2,
-    size: Vec2,
+    pub position: Vec2,
+    pub size: Vec2,
     color: Color,
     cooldown: i32,
+    pub hp: i32,
 }
 
 impl Enemy {
@@ -20,6 +20,7 @@ impl Enemy {
             size: Vec2::new(64., 64.),
             color: RED,
             cooldown: 0,
+            hp: 100,
         }
     }
 
@@ -61,5 +62,13 @@ impl Enemy {
         if self.cooldown > 0 {
             self.cooldown -= 1;
         }
+    }
+
+    pub fn is_collision_with_bullet(&self, bullet: &Bullet) -> bool {
+        helpers::box_collision(&self.position, &self.size, &bullet.position, &bullet.size)
+    }
+
+    pub fn deal_damage(&mut self, damage: i32) {
+        self.hp -= damage;
     }
 }

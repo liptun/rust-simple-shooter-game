@@ -22,6 +22,7 @@ async fn main() {
     let mut enemies: Vec<Enemy> = Vec::new();
 
     enemies.push(Enemy::new(&Vec2::new(10.,10.)));
+    enemies.push(Enemy::new(&Vec2::new(800.,10.)));
 
 
     loop {
@@ -41,9 +42,11 @@ async fn main() {
 
         for bullet in bullets.iter_mut() {
             bullet.update();
+            bullet.check_collision_with_enemies(&mut enemies);
             bullet.render();
         }
-        bullets.retain(|bullet| !bullet.is_out());
+        bullets.retain(|bullet| !bullet.is_out() && !bullet.destroy);
+        enemies.retain(|enemy| enemy.hp > 0);
 
         next_frame().await;
     }

@@ -1,4 +1,4 @@
-use crate::helpers;
+use crate::{enemy::Enemy, helpers};
 use macroquad::prelude::*;
 
 #[derive(Debug)]
@@ -9,10 +9,12 @@ pub enum Direction {
 
 #[derive(Debug)]
 pub struct Bullet {
-    position: Vec2,
-    size: Vec2,
+    pub position: Vec2,
+    pub size: Vec2,
     color: Color,
     direction: Direction,
+    pub destroy: bool,
+    speed: f32,
 }
 
 impl Bullet {
@@ -22,13 +24,15 @@ impl Bullet {
             size: Vec2::new(2., 12.),
             color: WHITE,
             direction,
+            destroy: false,
+            speed: 4.,
         }
     }
 
     pub fn update(&mut self) {
         match self.direction {
-            Direction::Up => self.position.y += -10.,
-            Direction::Down => self.position.y += 10.,
+            Direction::Up => self.position.y += -self.speed,
+            Direction::Down => self.position.y += self.speed,
         }
     }
 
@@ -41,5 +45,16 @@ impl Bullet {
             || self.position.y < 0.
             || self.position.x > 800.
             || self.position.y > 600.
+    }
+
+    pub fn check_collision_with_enemies(&mut self, enemies: &mut Vec<Enemy>) {
+        for enemy in enemies.iter_mut() {
+            if enemy.is_collision_with_bullet(&self) {
+                enemy.deal_damage(100);
+                self.destroy = true;
+                println!("collison {:?} {:?}", enemy, &self);
+                break;
+            }
+        }
     }
 }
