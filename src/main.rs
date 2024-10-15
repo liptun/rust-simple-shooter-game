@@ -23,8 +23,14 @@ async fn main() {
     let mut bullets: Vec<Bullet> = Vec::new();
     let mut enemies: Vec<Enemy> = Vec::new();
     let mut state = State::new();
+    let mut delta: f32;
 
     loop {
+        delta = macroquad::time::get_frame_time();
+        let max_delta = 0.05; // About 20 FPS
+        if delta > max_delta {
+            delta = max_delta;
+        }
         clear_background(BLACK);
         if is_key_down(KeyCode::Escape) {
             return;
@@ -40,10 +46,10 @@ async fn main() {
         }
 
         if enemies.len() == 0 {
-            if state.spawn_cooldown > 0 {
-                state.spawn_cooldown -= 1;
+            if state.spawn_cooldown > 0. {
+                state.spawn_cooldown -= delta;
             } else {
-                state.spawn_cooldown = 60;
+                state.spawn_cooldown = 3.;
                 state.wave += 1;
                 spawn_enemies(&mut enemies, state.wave);
                 if state.wave > 1 {
@@ -53,11 +59,11 @@ async fn main() {
         }
 
         if player.hp > 0 {
-            player.update_controls(Control::update(), &mut bullets);
-            player.update();
+            player.update_controls(delta, Control::update(), &mut bullets);
+            player.update(delta);
             player.render();
         } else {
-            state.game_over_countdown -= 1;
+            state.game_over_countdown -= delta;
             draw_text(
                 "Game over",
                 screen_width() / 2. - 200.,
@@ -65,18 +71,18 @@ async fn main() {
                 100.,
                 WHITE,
             );
-            if state.game_over_countdown == 0 {
+            if state.game_over_countdown <= 0. {
                 return;
             }
         }
 
         for enemy in enemies.iter_mut() {
-            enemy.update(&mut bullets, &player, &state);
+            enemy.update(delta, &mut bullets, &player, &state);
             enemy.render();
         }
 
         for bullet in bullets.iter_mut() {
-            bullet.update();
+            bullet.update(delta);
             if let bullet::Direction::Up = bullet.direction {
                 bullet.check_collision_with_enemies(&mut enemies);
             } else {

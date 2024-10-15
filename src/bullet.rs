@@ -25,14 +25,14 @@ impl Bullet {
             color: WHITE,
             direction,
             destroy: false,
-            speed: 4.,
+            speed: 400.,
         }
     }
 
-    pub fn update(&mut self) {
+    pub fn update(&mut self, delta: f32) {
         match self.direction {
-            Direction::Up => self.position.y += -self.speed,
-            Direction::Down => self.position.y += self.speed,
+            Direction::Up => self.position.y += -self.speed * delta,
+            Direction::Down => self.position.y += self.speed * delta,
         }
     }
 

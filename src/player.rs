@@ -11,8 +11,9 @@ use macroquad::prelude::*;
 pub struct Player {
     pub position: Vec2,
     pub size: Vec2,
+    pub speed: f32,
     color: Color,
-    cooldown: i32,
+    cooldown: f32,
     pub hp: i32,
 }
 
@@ -21,8 +22,9 @@ impl Player {
         Self {
             position: Vec2::new(screen_width() / 2. - 32. * 2., 500.),
             size: Vec2::new(64., 64.),
+            speed: 200.,
             color: BLUE,
-            cooldown: 0,
+            cooldown: 0.,
             hp: 100,
         }
     }
@@ -41,24 +43,24 @@ impl Player {
         );
     }
 
-    pub fn update(&mut self) {
-        if self.cooldown > 0 {
-            self.cooldown -= 1;
+    pub fn update(&mut self, delta: f32) {
+        if self.cooldown > 0. {
+            self.cooldown -= delta;
         }
     }
 
-    pub fn update_controls(&mut self, commands: HashSet<Command>, bullets: &mut Vec<Bullet>) {
+    pub fn update_controls(&mut self, delta: f32, commands: HashSet<Command>, bullets: &mut Vec<Bullet>) {
         if commands.contains(&Command::Left) {
-            self.position.x += -4.0;
+            self.position.x += -self.speed * delta;
         }
         if commands.contains(&Command::Right) {
-            self.position.x += 4.0;
+            self.position.x += self.speed * delta;
         }
-        if commands.contains(&Command::Shoot) && self.cooldown == 0 {
+        if commands.contains(&Command::Shoot) && self.cooldown <= 0. {
             let position = Vec2::new(self.position.x + self.size.x / 2., self.position.y - 10.);
 
             bullets.push(Bullet::new(&position, bullet::Direction::Up));
-            self.cooldown = 16;
+            self.cooldown = 0.3;
         }
     }
 

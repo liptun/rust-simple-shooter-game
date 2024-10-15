@@ -13,7 +13,7 @@ pub struct Enemy {
     pub position: Vec2,
     pub size: Vec2,
     color: Color,
-    cooldown: i32,
+    cooldown: f32,
     pub hp: i32,
 }
 
@@ -24,7 +24,7 @@ impl Enemy {
             position: *position,
             size: Vec2::new(64., 64.),
             color: RED,
-            cooldown: 0,
+            cooldown: 0.,
             hp: 100,
         }
     }
@@ -44,29 +44,37 @@ impl Enemy {
         );
     }
 
-    pub fn update(&mut self, bullets: &mut Vec<Bullet>, player: &Player, state: &State) {
+    pub fn update(
+        &mut self,
+        delta: f32,
+        bullets: &mut Vec<Bullet>,
+        player: &Player,
+        state: &State,
+    ) {
         let distance = self.position.x - player.position.x;
 
-        if distance.abs() > state.wave as f32 * 20. {
+        if player.hp <= 0 {
+            self.position.y -= delta * -200.;
+        } else if distance.abs() > state.wave as f32 * 20. {
             if distance > 0. {
-                self.position.x += -0.05 * state.wave as f32;
+                self.position.x += -10. * state.wave as f32 * delta;
             } else {
-                self.position.x += 0.05 * state.wave as f32;
+                self.position.x += 10. * state.wave as f32 * delta;
             }
         } else {
-            if self.cooldown == 0 {
+            if self.cooldown <= 0. {
                 let position = Vec2::new(
                     self.position.x + self.size.x / 2.,
                     self.size.y + self.position.y,
                 );
                 bullets.push(Bullet::new(&position, Direction::Down));
 
-                self.cooldown = (100 - state.wave * 10).max(10);
+                self.cooldown = 0.5;
             }
         }
 
-        if self.cooldown > 0 {
-            self.cooldown -= 1;
+        if self.cooldown > 0. {
+            self.cooldown -= delta;
         }
     }
 
