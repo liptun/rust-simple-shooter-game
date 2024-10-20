@@ -14,10 +14,10 @@ pub enum Command {
 impl Control {
     pub fn update() -> HashSet<Command> {
         let mut commands: HashSet<Command> = HashSet::new();
-        if is_key_down(KeyCode::Left) {
+        if is_key_down(KeyCode::Left) || is_key_down(KeyCode::A) {
             commands.insert(Command::Left);
         }
-        if is_key_down(KeyCode::Right) {
+        if is_key_down(KeyCode::Right) || is_key_down(KeyCode::D) {
             commands.insert(Command::Right);
         }
         if is_key_down(KeyCode::Space) {
